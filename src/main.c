@@ -336,6 +336,7 @@ int main(void) {
             rdpq_tex_blit(disp, 0, 0, NULL);
 
             scrType = SCREENSHOT_FRAME_CAPTURED;
+            successfulSave = true;
 
             rdpq_detach();
         }
