@@ -36,13 +36,20 @@
 #include "qoi_enc_n64.h"
 #include "colorconv.h"
 
+/// @brief Checks what type of screenshot was taken to perform different actions based on the type of screenshot taken, such as displaying different information on the screen or saving the screenshot in a different way.
 enum whichScreenshotType {
+    /// @brief No screenshot has been taken yet
     SCREENSHOT_NEVER_TAKEN,
+    /// @brief The screenshot was saved to null, which is used for testing the performance of the encoder without the bottleneck of writing to the SD card
     SCREENSHOT_TYPE_NULL,
+    /// @brief The screenshot was saved as a raw file, which is used for testing the performance of writing to the SD card without the bottleneck of encoding the image
     SCREENSHOT_TYPE_RAW,
+    /// @brief The screenshot was saved as a QOI file, which is the main functionality of this project
     SCREENSHOT_TYPE_QOI,
+    /// @brief The screenshot was captured into a buffer but not saved, which is used for testing the performance of capturing the framebuffer without the bottleneck of encoding or writing to the SD card
     SCREENSHOT_FRAME_CAPTURED
 } whichScreenshotType;
+
 /// @file qoi_n64_scr.c
 /// @brief This file contains code for N64 ROM for taking screenshots of whatever displayed on N64 to QOI file.
 
@@ -112,6 +119,9 @@ bool save_screenshot(surface_t* disp, const char* filename, uint32_t *bytesWritt
     return true;
 }
 
+/// @brief Saves the screenshot to null, which is used for testing the performance of the encoder without the bottleneck of writing to the SD card.
+/// @param disp
+/// @return Success of saving the screenshot
 bool save_screenshot_null(surface_t* disp, uint32_t *bytesWritten) {
     if (disp == NULL || bytesWritten == NULL) return false;
     // Get the framebuffer data
@@ -385,7 +395,7 @@ int main(void) {
             float endEncode = timer_ticks();
             encodedTime = TIMER_MICROS(endEncode - startEncode) / 1000.0f; // Convert to milliseconds
             scrType = SCREENSHOT_TYPE_NULL;
-            
+
             surface_free(&img);
 
         }

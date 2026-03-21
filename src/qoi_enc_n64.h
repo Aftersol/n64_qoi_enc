@@ -488,7 +488,6 @@ void qoi_encode_chunk(qoi_desc_t *desc, qoi_enc_t *enc, void *qoi_pixel_bytes)
 
 }
 
-/*  */
 /// @brief Initalize the QOI encoder to the default state
 /// @param enc QOI encoder
 /// @return If the encoder initialized successfully
