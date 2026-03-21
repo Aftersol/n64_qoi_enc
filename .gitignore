@@ -5,3 +5,6 @@ build
 
 # N64 ROM file type
 *.z64
+
+# Exclude sprite files
+*.sprite

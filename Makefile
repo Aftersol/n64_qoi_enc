@@ -29,7 +29,7 @@ all: qoi_enc.z64
 
 FILESYSTEM_DIR = filesystem
 
-assets = $(FILESYSTEM_DIR)/n64brew.png
+assets = $(FILESYSTEM_DIR)/n64brew.png $(FILESYSTEM_DIR)/background.png
 assets_conv = $(addprefix filesystem/,$(notdir $(assets:%.png=%.sprite)))
 
 AUDIOCONV_FLAGS ?=

@@ -36,7 +36,13 @@
 #include "qoi_enc_n64.h"
 #include "colorconv.h"
 
-
+enum whichScreenshotType {
+    SCREENSHOT_NEVER_TAKEN,
+    SCREENSHOT_TYPE_NULL,
+    SCREENSHOT_TYPE_RAW,
+    SCREENSHOT_TYPE_QOI,
+    SCREENSHOT_FRAME_CAPTURED
+} whichScreenshotType;
 /// @file qoi_n64_scr.c
 /// @brief This file contains code for N64 ROM for taking screenshots of whatever displayed on N64 to QOI file.
 
@@ -186,6 +192,10 @@ int main(void) {
 
     rdpq_font_t *font;
 
+    enum whichScreenshotType scrType = SCREENSHOT_NEVER_TAKEN;
+    bool successfulSave = false;
+    surface_t lastSavedFrame = surface_alloc(FMT_RGBA16, 320, 240);
+
     // Initialize libdragon subsystems
     debug_init_isviewer();
     console_init();
@@ -205,6 +215,7 @@ int main(void) {
     rdpq_text_register_font(1, font);
 
     sprite_t* logo = sprite_load("rom://n64brew.sprite");
+    sprite_t* background = sprite_load("rom://background.sprite");
     uint64_t start = timer_ticks(), end = timer_ticks();
     float delta = 0.0f;
     while (1) {
@@ -215,6 +226,7 @@ int main(void) {
 
         joypad_poll();
         joypad_buttons_t pressed = joypad_get_buttons_pressed(port);
+        joypad_buttons_t held = joypad_get_buttons_held(port);
 
         end = timer_ticks();
         delta = TIMER_MICROS(end - start) / 1000.0f; // Convert to milseconds
@@ -261,8 +273,11 @@ int main(void) {
 
         rdpq_attach(disp, NULL);
 
-        rdpq_set_mode_fill(RGBA32(0, 0, 255, 255));
-        rdpq_fill_rectangle(0, 0, 320, 240);
+        rdpq_set_mode_copy(true);
+        rdpq_sprite_blit(background, 0, 0, &( rdpq_blitparms_t ) {
+            .scale_x = 1.0f,
+            .scale_y = 1.0f
+        });
 
         rdpq_set_mode_copy(true);
         rdpq_sprite_blit(logo, (int)x, (int)y, &( rdpq_blitparms_t ) {
@@ -276,33 +291,84 @@ int main(void) {
                 .width = 320-32,
                 .align = ALIGN_LEFT,
                 .wrap = WRAP_WORD,
-            }, 1, 32, 32, "Encoded in %.2f ms", encodedTime);
+            }, 1, 32, 32, "Encoded in %.8f ms", encodedTime);
 
+        rdpq_text_printf(&(rdpq_textparms_t) {
+            .width = 320-32,
+            .align = ALIGN_LEFT,
+            .wrap = WRAP_WORD,
+        }, 1, 32, 48, "State: %s", scrType == SCREENSHOT_NEVER_TAKEN ? "No screenshot taken" : 
+            scrType == SCREENSHOT_TYPE_NULL ? "Saved to null" :
+            scrType == SCREENSHOT_TYPE_RAW ? "Saved as raw" :
+            scrType == SCREENSHOT_TYPE_QOI ? "Saved as QOI" :
+            scrType == SCREENSHOT_FRAME_CAPTURED ? "Frame captured, not saved" : "Unknown");
+
+        rdpq_text_printf(&(rdpq_textparms_t) {
+            .width = 320-32,
+            .align = ALIGN_LEFT,
+            .wrap = WRAP_WORD,
+        }, 1, 32, 64, "Save successful: %s", successfulSave ? "Yes" : "No");
         
-        if (pressed.b) {
+        if (pressed.z) {
+
+            // capture the current frame into a buffer for testing
+            rdpq_attach(&lastSavedFrame, NULL);
+            rdpq_set_mode_copy(false);
+            rdpq_tex_blit(disp, 0, 0, NULL);
+            scrType = SCREENSHOT_FRAME_CAPTURED;
+            rdpq_detach();
+        } else if (held.d_left) {
+            rdpq_set_mode_copy(true);
+            rdpq_tex_blit(&lastSavedFrame, 0, 0, NULL);
+        }
+        else if (pressed.b) {
             FILE* fp = fopen("sd://screenshot.raw", "wb");
             if (fp) {
                 fclose(fp);
-                save_screenshot_raw(disp, "sd://screenshot.raw");
+                surface_t img = surface_alloc(FMT_RGBA16, 320, 240);
+                rdpq_attach(&img, NULL);
+                rdpq_set_mode_copy(false);
+                rdpq_tex_blit(disp, 0, 0, NULL);
+                successfulSave = save_screenshot_raw(disp, "sd://screenshot.raw");
+                rdpq_detach();
+                surface_free(&img);
+                scrType = SCREENSHOT_TYPE_RAW;
+                
+            }
+            else {
+
+                scrType = SCREENSHOT_TYPE_RAW;
+                successfulSave = false;
             }
         }
         else if (pressed.a) {
             FILE* fp = fopen("sd://screenshot.qoi", "wb");
-
+            surface_t img = surface_alloc(FMT_RGBA16, 320, 240);
+            
+            rdpq_attach(&img, NULL);
+            rdpq_set_mode_copy(false);
+            rdpq_tex_blit(disp, 0, 0, NULL);
+            rdpq_detach();
             if (fp) {
                 
                 fclose(fp);
+                
                 float startEncode = timer_ticks();
-                save_screenshot(disp, "sd://screenshot.qoi");
+                
+                successfulSave = save_screenshot(&img, "sd://screenshot.qoi");
                 float endEncode = timer_ticks();
                 encodedTime = TIMER_MICROS(endEncode - startEncode) / 1000.0f; // Convert to milliseconds
+                scrType = SCREENSHOT_TYPE_QOI;
             }
             else {
                 float startEncode = timer_ticks();
-                save_screenshot_null(disp);
+                successfulSave = save_screenshot_null(&img);
                 float endEncode = timer_ticks();
                 encodedTime = TIMER_MICROS(endEncode - startEncode) / 1000.0f; // Convert to milliseconds
+                scrType = SCREENSHOT_TYPE_NULL;
             }
+            
+            surface_free(&img);
         }
 
         rdpq_detach_show();
