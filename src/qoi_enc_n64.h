@@ -321,15 +321,10 @@ void write_qoi_header(qoi_desc_t *desc, void* dest)
 /// @param px The pixel containing the RGB information to place into the QOI opcode
 static inline void qoi_enc_rgb(qoi_enc_t *enc, qoi_pixel_t px)
 {
-    uint8_t tag[4] = {
-        QOI_OP_RGB,
-        px.red,
-        px.green,
-        px.blue
-    };
-
-    *((uint32_t*)enc->buffer0) = qoi_to_be32(*((uint32_t*)tag));
-
+    enc->buffer0[enc->buffer_offset + 0] = QOI_OP_RGB;
+    enc->buffer0[enc->buffer_offset + 1] = px.red;
+    enc->buffer0[enc->buffer_offset + 2] = px.green;
+    enc->buffer0[enc->buffer_offset + 3] = px.blue;
     enc->buffer_offset += 4;
 }
 
@@ -338,20 +333,11 @@ static inline void qoi_enc_rgb(qoi_enc_t *enc, qoi_pixel_t px)
 /// @param px The pixel containing the RGBA information to place into the QOI opcode
 static inline void qoi_enc_rgba(qoi_enc_t *enc, qoi_pixel_t px)
 {
-    uint8_t tag[8] =
-    {
-        QOI_OP_RGBA,
-        px.red,
-        px.green,
-        px.blue,
-        px.alpha,
-        0,
-        0,
-        0
-    };
-
-    *(uint64_t*)(&enc->buffer0[enc->buffer_offset]) = (*(uint64_t*)tag & 0xFFFFFFFFFF000000) | (enc->buffer0[enc->buffer_offset] & 0x0000000000FFFFFF);
-
+    enc->buffer0[enc->buffer_offset + 0] = QOI_OP_RGBA;
+    enc->buffer0[enc->buffer_offset + 1] = px.red;
+    enc->buffer0[enc->buffer_offset + 2] = px.green;
+    enc->buffer0[enc->buffer_offset + 3] = px.blue;
+    enc->buffer0[enc->buffer_offset + 4] = px.alpha;
     enc->buffer_offset += 5;
 }
 
@@ -384,12 +370,8 @@ static inline void qoi_enc_diff(qoi_enc_t *enc, uint8_t red_diff, uint8_t green_
 /// @param enc QOI encoder
 static inline void qoi_enc_luma(qoi_enc_t *enc, uint8_t green_diff, uint8_t dr_dg, uint8_t db_dg)
 {
-    uint8_t tag[2] = {
-        QOI_OP_LUMA | (uint8_t)(green_diff + 32), 
-        (uint8_t)(dr_dg + 8) << 4 | (uint8_t)(db_dg + 8)
-    };
-
-    *(uint16_t*)&enc->buffer0[enc->buffer_offset] = *(uint16_t*)tag;
+    enc->buffer0[enc->buffer_offset + 0] = QOI_OP_LUMA | (uint8_t)(green_diff + 32);
+    enc->buffer0[enc->buffer_offset + 1] = (uint8_t)(dr_dg + 8) << 4 | (uint8_t)(db_dg + 8);
 
     enc->buffer_offset += 2;
 }

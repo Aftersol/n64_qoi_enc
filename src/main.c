@@ -50,18 +50,15 @@ enum whichScreenshotType {
 /// @param disp 
 /// @param filename 
 /// @return Success of saving the screenshot
-bool save_screenshot(surface_t* disp, const char* filename) {
-    if (disp == NULL) return false;
+bool save_screenshot(surface_t* disp, const char* filename, uint32_t *bytesWritten) {
+    if (disp == NULL || bytesWritten == NULL) return false;
     // Get the framebuffer data
     uint16_t* framebuffer = (uint16_t*)disp->buffer;
 
     // Save the screenshot using the QOI encoder
-    qoi_desc_t desc = {
-        .width = 320,
-        .height = 240,
-        .channels = 3, // RGB format
-        .colorspace = QOI_SRGB
-    };
+    qoi_desc_t desc;
+
+    *bytesWritten = 0;
 
     qoi_set_dimensions(&desc, 320, 240); // Resolution of the N64 framebuffer
 
@@ -89,9 +86,10 @@ bool save_screenshot(surface_t* disp, const char* filename) {
     {
         uint32_t rgba = n64_color16_to_rgba32(framebuffer[px]);
         qoi_encode_chunk(&desc, &enc, &rgba);
-        
+        enc.pixels_written++;
         if (enc.pixels_written >= enc.len) {
-            fwrite(enc.buffer0, 1, enc.len, fp);
+            fwrite(enc.buffer0, 1, enc.buffer_offset, fp);
+            *bytesWritten += enc.buffer_offset;
             break;
         };
 
@@ -99,28 +97,25 @@ bool save_screenshot(surface_t* disp, const char* filename) {
         // leaving space for the padding bytes at the end of the file
         if (enc.buffer_offset >= 4096-8) { 
             fwrite(enc.buffer0, 1, enc.buffer_offset, fp);
+            *bytesWritten += enc.buffer_offset;
             enc.buffer_offset = 0;
         }
         
     }
 
-    fwrite(QOI_PADDING, 8, sizeof(QOI_PADDING), fp); // Write the padding bytes
+    fwrite(QOI_PADDING, sizeof(uint8_t), 8, fp); // Write the padding bytes
     fclose(fp);
     return true;
 }
 
-bool save_screenshot_null(surface_t* disp) {
-    if (disp == NULL) return false;
+bool save_screenshot_null(surface_t* disp, uint32_t *bytesWritten) {
+    if (disp == NULL || bytesWritten == NULL) return false;
     // Get the framebuffer data
     uint16_t* framebuffer = (uint16_t*)disp->buffer;
 
     // Save the screenshot using the QOI encoder
-    qoi_desc_t desc = {
-        .width = 320,
-        .height = 240,
-        .channels = 3, // RGB format
-        .colorspace = QOI_SRGB
-    };
+    qoi_desc_t desc;
+    *bytesWritten = 0;
 
     qoi_set_dimensions(&desc, 320, 240); // Resolution of the N64 framebuffer
 
@@ -140,14 +135,19 @@ bool save_screenshot_null(surface_t* disp) {
     {
         uint32_t rgba = n64_color16_to_rgba32(framebuffer[px]);
         qoi_encode_chunk(&desc, &enc, &rgba);
-        
+
+        enc.pixels_written++;
+
         if (enc.pixels_written >= enc.len) {
+            *bytesWritten += enc.buffer_offset;
             break;
+            
         };
 
         // Write the buffer to the file when it is almost full,
         // leaving space for the padding bytes at the end of the file
         if (enc.buffer_offset >= 4096-8) { 
+            *bytesWritten += enc.buffer_offset;
             enc.buffer_offset = 0;
         }
         
@@ -157,8 +157,8 @@ bool save_screenshot_null(surface_t* disp) {
 }
 
 /// @brief Saves the raw screenshot to the SD card if it somehow exists.
-bool save_screenshot_raw(surface_t* disp, const char* filename) {
-
+bool save_screenshot_raw(surface_t* disp, const char* filename, uint32_t *bytesWritten) {
+    if (disp == NULL || bytesWritten == NULL || filename == NULL) return false;
     // Get the framebuffer data
     uint16_t* framebuffer = (uint16_t*)disp->buffer;
 
@@ -170,6 +170,7 @@ bool save_screenshot_raw(surface_t* disp, const char* filename) {
     
     // Write the raw pixel data to the file
     fwrite(framebuffer, sizeof(uint16_t), 320 * 240, fp);
+    *bytesWritten = 320 * 240 * sizeof(uint16_t);
     
     fclose(fp);
     return true;
@@ -195,6 +196,8 @@ int main(void) {
     enum whichScreenshotType scrType = SCREENSHOT_NEVER_TAKEN;
     bool successfulSave = false;
     surface_t lastSavedFrame = surface_alloc(FMT_RGBA16, 320, 240);
+
+    uint32_t bytesWritten = 0;
 
     // Initialize libdragon subsystems
     debug_init_isviewer();
@@ -274,10 +277,7 @@ int main(void) {
         rdpq_attach(disp, NULL);
 
         rdpq_set_mode_copy(true);
-        rdpq_sprite_blit(background, 0, 0, &( rdpq_blitparms_t ) {
-            .scale_x = 1.0f,
-            .scale_y = 1.0f
-        });
+        rdpq_sprite_blit(background, 0, 0, NULL);
 
         rdpq_set_mode_copy(true);
         rdpq_sprite_blit(logo, (int)x, (int)y, &( rdpq_blitparms_t ) {
@@ -291,13 +291,13 @@ int main(void) {
                 .width = 320-32,
                 .align = ALIGN_LEFT,
                 .wrap = WRAP_WORD,
-            }, 1, 32, 32, "Encoded in %.8f ms", encodedTime);
+            }, 1, 32, 32, "Encoded in %.8f ms, bytes written: %lu bytes", encodedTime, bytesWritten);
 
         rdpq_text_printf(&(rdpq_textparms_t) {
             .width = 320-32,
             .align = ALIGN_LEFT,
             .wrap = WRAP_WORD,
-        }, 1, 32, 48, "State: %s", scrType == SCREENSHOT_NEVER_TAKEN ? "No screenshot taken" : 
+        }, 1, 32, 60, "State: %s", scrType == SCREENSHOT_NEVER_TAKEN ? "No screenshot taken" : 
             scrType == SCREENSHOT_TYPE_NULL ? "Saved to null" :
             scrType == SCREENSHOT_TYPE_RAW ? "Saved as raw" :
             scrType == SCREENSHOT_TYPE_QOI ? "Saved as QOI" :
@@ -307,7 +307,7 @@ int main(void) {
             .width = 320-32,
             .align = ALIGN_LEFT,
             .wrap = WRAP_WORD,
-        }, 1, 32, 64, "Save successful: %s", successfulSave ? "Yes" : "No");
+        }, 1, 32, 72, "Save successful: %s", successfulSave ? "Yes" : "No");
         
         if (pressed.z) {
 
@@ -329,7 +329,10 @@ int main(void) {
                 rdpq_attach(&img, NULL);
                 rdpq_set_mode_copy(false);
                 rdpq_tex_blit(disp, 0, 0, NULL);
-                successfulSave = save_screenshot_raw(disp, "sd://screenshot.raw");
+                float startEncode = timer_ticks();
+                successfulSave = save_screenshot_raw(disp, "sd://screenshot.raw", &bytesWritten);
+                float endEncode = timer_ticks();
+                encodedTime = TIMER_MICROS(endEncode - startEncode) / 1000.0f; // Convert to milliseconds
                 rdpq_detach();
                 surface_free(&img);
                 scrType = SCREENSHOT_TYPE_RAW;
@@ -339,6 +342,8 @@ int main(void) {
 
                 scrType = SCREENSHOT_TYPE_RAW;
                 successfulSave = false;
+                encodedTime = 0.0f;
+                bytesWritten = 0;
             }
         }
         else if (pressed.a) {
@@ -355,14 +360,14 @@ int main(void) {
                 
                 float startEncode = timer_ticks();
                 
-                successfulSave = save_screenshot(&img, "sd://screenshot.qoi");
+                successfulSave = save_screenshot(&img, "sd://screenshot.qoi", &bytesWritten);
                 float endEncode = timer_ticks();
                 encodedTime = TIMER_MICROS(endEncode - startEncode) / 1000.0f; // Convert to milliseconds
                 scrType = SCREENSHOT_TYPE_QOI;
             }
             else {
                 float startEncode = timer_ticks();
-                successfulSave = save_screenshot_null(&img);
+                successfulSave = save_screenshot_null(&img, &bytesWritten);
                 float endEncode = timer_ticks();
                 encodedTime = TIMER_MICROS(endEncode - startEncode) / 1000.0f; // Convert to milliseconds
                 scrType = SCREENSHOT_TYPE_NULL;
