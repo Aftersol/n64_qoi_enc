@@ -2,7 +2,7 @@
 
 https://github.com/user-attachments/assets/0d024e08-101c-45ba-83ee-db06d3b5e936
 
-Small, portable QOI (Quite OK Image) encoder for Nintendo 64
+Small, QOI (Quite OK Image) encoder demo for Nintendo 64
 
 ## Controls
 
