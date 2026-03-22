@@ -169,7 +169,7 @@ bool save_screenshot_null(surface_t* disp, uint32_t *bytesWritten) {
         
     }
 
-    bytesWritten += 8; // Account for the padding bytes
+    *bytesWritten += 8; // Account for the padding bytes
 
     return true;
 }
