@@ -49,10 +49,10 @@ uint16_t read_be_u16(uint16_t val)
 /// @return The converted 32-bit RGBA pixel value
 inline uint32_t n64_color16_to_rgba32(uint16_t px16)
 {
-    int r = (read_be_u16(px16) >> 11) & 0x1F;
-    int g = (read_be_u16(px16) >>  6) & 0x1F;
-    int b = (read_be_u16(px16) >>  1) & 0x1F;
-    int a = (read_be_u16(px16) >>  0) & 0x01;
+    int r = (px16 >> 11) & 0x1F;
+    int g = (px16 >>  6) & 0x1F;
+    int b = (px16 >>  1) & 0x1F;
+    int a = (px16 >>  0) & 0x01;
 
     // expand to 8 bit
     r = (r << 3) | (r >> 2);
