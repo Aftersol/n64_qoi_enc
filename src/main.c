@@ -281,7 +281,7 @@ int main(void) {
             }
 
             if (toRight) {
-                if (x < 320.0f - (logo->width * 0.5)) {
+                if (x < 320.0f - (logo->width * 0.5f)) {
                     x += speed * delta;
                 }
                 else {
