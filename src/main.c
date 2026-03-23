@@ -95,7 +95,7 @@ bool save_screenshot(surface_t* disp, const char* filename, uint32_t *bytesWritt
         qoi_encode_chunk(&desc, &enc, &rgba);
 
         if (enc.pixels_written >= enc.len) {
-            fwrite(enc.buffer0, 1, enc.buffer_offset, fp);
+            fwrite(enc.enc_buffer, 1, enc.buffer_offset, fp);
             *bytesWritten += enc.buffer_offset;
             break;
         };
@@ -103,7 +103,7 @@ bool save_screenshot(surface_t* disp, const char* filename, uint32_t *bytesWritt
         // Write the buffer to the file when it is almost full,
         // leaving space for the padding bytes at the end of the file
         if (enc.buffer_offset >= 4096-8) { 
-            fwrite(enc.buffer0, 1, enc.buffer_offset, fp);
+            fwrite(enc.enc_buffer, 1, enc.buffer_offset, fp);
             *bytesWritten += enc.buffer_offset;
             qoi_enc_reset_buffer(&enc);
         }
