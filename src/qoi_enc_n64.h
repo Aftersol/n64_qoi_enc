@@ -151,6 +151,7 @@ bool read_qoi_header(qoi_desc_t *desc, void* data);
 bool qoi_enc_init(qoi_desc_t* desc, qoi_enc_t* enc);
 bool qoi_enc_done(qoi_enc_t* enc);
 
+bool qoi_enc_reset_buffer(qoi_enc_t* enc);
 void qoi_encode_chunk(qoi_desc_t *desc, qoi_enc_t *enc, void *qoi_pixel_bytes);
 
 static inline void qoi_enc_rgb(qoi_enc_t *enc, qoi_pixel_t px);
@@ -513,6 +514,18 @@ bool qoi_enc_init(qoi_desc_t* desc, qoi_enc_t* enc)
         as the previous pixel value. 
     */
     qoi_set_pixel_rgba(&enc->prev_pixel, 0, 0, 0, 255);
+
+    return true;
+}
+
+/// @brief Resets the buffer of the QOI encoder to the default state
+/// @param enc 
+/// @return If the buffer reset successfully
+bool qoi_enc_reset_buffer(qoi_enc_t* enc)
+{
+    if (enc == NULL) return false;
+
+    enc->buffer_offset = 0;
 
     return true;
 }

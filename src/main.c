@@ -105,7 +105,7 @@ bool save_screenshot(surface_t* disp, const char* filename, uint32_t *bytesWritt
         if (enc.buffer_offset >= 4096-8) { 
             fwrite(enc.buffer0, 1, enc.buffer_offset, fp);
             *bytesWritten += enc.buffer_offset;
-            enc.buffer_offset = 0;
+            qoi_enc_reset_buffer(&enc);
         }
         
     }
@@ -161,7 +161,7 @@ bool save_screenshot_null(surface_t* disp, uint32_t *bytesWritten) {
         // leaving space for the padding bytes at the end of the file
         if (enc.buffer_offset >= 4096-8) { 
             *bytesWritten += enc.buffer_offset;
-            enc.buffer_offset = 0;
+            qoi_enc_reset_buffer(&enc);
         }
         
     }
