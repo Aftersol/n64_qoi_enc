@@ -91,7 +91,7 @@ bool save_screenshot(surface_t* disp, const char* filename, uint32_t *bytesWritt
     // Encode the pixel data
     for (uint32_t px = 0; px < enc.len; px++)
     {
-        uint32_t rgba = n64_color16_to_rgba32(framebuffer[px]);
+        uint32_t rgba = n64_color16_to_rgba32(read_be_u16(framebuffer[px]));
         qoi_encode_chunk(&desc, &enc, &rgba);
 
         if (enc.pixels_written >= enc.len) {
