@@ -174,16 +174,16 @@ int main(int argc, char* argv[])
     uint16_t* frame_buffer = (uint16_t*)file_buffer0;
     for (size_t i = 0; i < file_size / sizeof(uint16_t); i++) {
             
-            int r = (read_be_u16(frame_buffer[i]) >> 11) & 0x1F;
-            int g = (read_be_u16(frame_buffer[i]) >>  6) & 0x1F;
-            int b = (read_be_u16(frame_buffer[i]) >>  1) & 0x1F;
-            int a = (read_be_u16(frame_buffer[i]) >>  0) & 0x01;
-        
-            // expand to 8 bit
-            r = (r << 3) | (r >> 2);
-            g = (g << 3) | (g >> 2);
-            b = (b << 3) | (b >> 2);
-            a = a * 255;
+        int r = (read_be_u16(frame_buffer[i]) >> 11) & 0x1F;
+        int g = (read_be_u16(frame_buffer[i]) >>  6) & 0x1F;
+        int b = (read_be_u16(frame_buffer[i]) >>  1) & 0x1F;
+        int a = (read_be_u16(frame_buffer[i]) >>  0) & 0x01;
+    
+        // expand to 8 bit
+        r = (r << 3) | (r >> 2);
+        g = (g << 3) | (g >> 2);
+        b = (b << 3) | (b >> 2);
+        a = a * 255;
 
         if (channels == 4)
         {
