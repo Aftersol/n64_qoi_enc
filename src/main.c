@@ -29,7 +29,7 @@
 */
 #include <stdatomic.h>
 #include <stdlib.h>
-#include <pthread.h>
+#include <threads.h>
 
 #include <libdragon.h>
 #include "../libdragon/include/joypad.h"
@@ -338,7 +338,7 @@ int main(void) {
         rdpq_set_mode_standard();
 
         if (showInfo) {
-            
+
             mutex_lock(&mutex[0]);
             rdpq_text_printf(&(rdpq_textparms_t) {
                     .width = 320-32,
