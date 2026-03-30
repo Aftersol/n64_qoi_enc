@@ -27,7 +27,7 @@
     SOFTWARE.
 
 */
-#include <stdatomic.h>
+
 #include <stdlib.h>
 #include <threads.h>
 
@@ -405,7 +405,7 @@ int main(void) {
                 bytesWritten = 0;
                 encodedTime = 0.0f;
                 successfulSave = false;
-                
+
                 mutex_unlock(&mutex);
             }
             else {
