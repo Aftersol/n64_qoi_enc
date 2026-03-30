@@ -41,6 +41,10 @@ libdragon make
 
 ---
 
+## Tools
+
+- [Framebuffer Converter](https://aftersol.github.io/n64_raw_framebuffer_converter/) Converts raw screenshot captured from N64 to PNG
+
 ## License
 
 MIT License — see [LICENSE file](./LICENSE) for details.
