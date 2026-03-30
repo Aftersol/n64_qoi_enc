@@ -382,8 +382,10 @@ int main(void) {
             rdpq_detach();
 
             mutex_lock(&mutex[0]);
+            
             scrType = SCREENSHOT_FRAME_CAPTURED;
             successfulSave = true;
+
             mutex_unlock(&mutex[0]);
             
         }
@@ -398,26 +400,34 @@ int main(void) {
             surface_t img = surface_alloc(FMT_RGBA16, 320, 240);
             if (!sdCardExists) {
                 mutex_lock(&mutex);
+
                 scrType = SCREENSHOT_NO_SD_CARD;
                 bytesWritten = 0;
                 encodedTime = 0.0f;
                 successfulSave = false;
+                
                 mutex_unlock(&mutex);
             }
             else {
-                
+                bool successfulScreenshot = false;
+
                 rdpq_attach(&img, NULL);
                 rdpq_set_mode_copy(false);
                 rdpq_tex_blit(disp, 0, 0, NULL);
                 rdpq_detach();
 
-                mutex_lock(&mutex);
-
                 float startEncode = timer_ticks();
+
                 thrd_create(&thread, (thrd_start_t)save_screenshot_raw, &img, "sd:/screenshot.raw", &bytesWritten);
                 //successfulSave = save_screenshot_raw(&img, "sd:/screenshot.raw", &bytesWritten);
-                thrd_join(thread, &successfulSave);
+                thrd_join(thread, &successfulScreenshot);
+                
                 float endEncode = timer_ticks();
+
+                mutex_lock(&mutex);
+
+                successfulSave = successfulScreenshot;
+
                 encodedTime = TIMER_MICROS(endEncode - startEncode) / 1000.0f; // Convert to milliseconds
 
                 scrType = SCREENSHOT_TYPE_RAW;
@@ -442,20 +452,24 @@ int main(void) {
                 mutex_unlock(&mutex);
             }
             else {
+                bool successfulScreenshot = false;
+
                 rdpq_attach(&img, NULL);
                 rdpq_set_mode_copy(false);
                 rdpq_tex_blit(disp, 0, 0, NULL);
                 rdpq_detach();
-                
-                mutex_lock(&mutex);
 
                 float startEncode = timer_ticks();
 
                 thrd_create(&thread, (thrd_start_t)save_screenshot, &img, "sd:/screenshot.qoi", &bytesWritten);
                 //successfulSave = save_screenshot(&img, "sd:/screenshot.qoi", &bytesWritten);
-                thrd_join(thread, &successfulSave);
+                thrd_join(thread, &successfulScreenshot);
 
                 float endEncode = timer_ticks();
+
+                mutex_lock(&mutex);
+
+                successfulSave = successfulScreenshot;
 
                 encodedTime = TIMER_MICROS(endEncode - startEncode) / 1000.0f; // Convert to milliseconds
 
@@ -468,19 +482,23 @@ int main(void) {
         }
         else if (pressed.d_up) {
             surface_t img = surface_alloc(FMT_RGBA16, 320, 240);
+            bool successfulScreenshot = false;
             
             rdpq_attach(&img, NULL);
             rdpq_set_mode_copy(false);
             rdpq_tex_blit(disp, 0, 0, NULL);
             rdpq_detach();
 
-            mutex_lock(&mutex);
-
             float startEncode = timer_ticks();
             thrd_create(&thread, (thrd_start_t)save_screenshot_null, &img, &bytesWritten);
             //successfulSave = save_screenshot_null(&img, &bytesWritten);
             float endEncode = timer_ticks();
-            thrd_join(thread, &successfulSave);
+            thrd_join(thread, &successfulScreenshot);
+
+            mutex_lock(&mutex);
+
+            successfulSave = successfulScreenshot;
+
             encodedTime = TIMER_MICROS(endEncode - startEncode) / 1000.0f; // Convert to milliseconds
 
             scrType = SCREENSHOT_TYPE_NULL;
