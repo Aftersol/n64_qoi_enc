@@ -1,6 +1,9 @@
 /*
+    @file qoi_enc_n64.h
+    @author Aftersol
+    @brief QOI Encoder Library for N64
 
-    qoi_enc_n64.h - QOI Encoder for N64
+    qoi_enc_n64.h - QOI Encoder Library for N64
 
     This header file is modified from Simplified QOI Encoder code
     for the Nintendo 64. It provides functions to encode the N64 framebuffer
@@ -47,19 +50,25 @@ extern "C" {
 #include <stddef.h>
 #include <stdbool.h>
 
-#include "colorconv.h"
 
 /* QOI OPCODES */
 
-#define QOI_TAG      0xC0
-#define QOI_TAG_MASK 0x3F
+/// @brief Mask for the tag bits of the opcode, which are the two most significant bits of the opcode byte
+#define QOI_TAG      0xC0 
+/// @brief Mask for the remaining bits of the opcode after masking out the tag bits
+#define QOI_TAG_MASK 0x3F 
 
-#define QOI_OP_RGB   0xFE
-#define QOI_OP_RGBA  0xFF
-
-#define QOI_OP_INDEX 0x00
-#define QOI_OP_DIFF  0x40
-#define QOI_OP_LUMA  0x80
+/// @brief 11111110: Followed by 3 bytes of RGB data, representing the color of the pixel. This is used when the pixel value cannot be encoded using any of the other opcodes.
+#define QOI_OP_RGB   0xFE 
+/// @brief 11111110: Followed by 3 bytes of RGB data and 1 byte of alpha data, representing the color of the pixel. This is used when the pixel value cannot be encoded using any of the other opcodes.
+#define QOI_OP_RGBA  0xFF 
+/// @brief 00xxxxxx: Use the color at the index xx in the color index array.
+#define QOI_OP_INDEX 0x00 
+/// @brief 01xxxxxx: The color is the same as the previous pixel, with each channel optionally modified by a small value stored in the remaining 6 bits of the opcode.
+#define QOI_OP_DIFF  0x40 
+/// @brief 10xxxxxx: The color is represented by a luminance value and two chroma values.
+#define QOI_OP_LUMA  0x80 
+/// @brief 11xxxxxx: The color is the same as the previous pixel, and this run continues for xx pixels.
 #define QOI_OP_RUN   0xC0
 
 enum qoi_pixel_color {QOI_RED, QOI_GREEN, QOI_BLUE, QOI_ALPHA};
@@ -75,23 +84,34 @@ static const uint8_t QOI_PADDING[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 /// @brief QOI descriptor as read by the header of a QOI file
 typedef struct
 {
-    uint32_t width; /* in big endian */
-    uint32_t height; /* in big endian */
+    /// @brief The width of the image in pixels, stored in big endian format
+    uint32_t width;
+    /// @brief The height of the image in pixels, stored in big endian format
+    uint32_t height;
+    /// @brief The number of channels in the image, which is either 3 for RGB or 4 for RGBA
     uint8_t channels;
+    /// @brief The color space of the image, which is either 0 for sRGB with linear alpha or 1 for linear RGB
     uint8_t colorspace;
 } qoi_desc_t;
 
-/// @brief pixel values
+/// @brief QOI pixel structure for storing the color values of a pixel in both individual channels and as a concatenated value for easy comparison and hashing
 typedef union
 {
+    /// @brief The individual color channels of the pixel
     struct {
+        /// @brief The red value of the pixel
         uint8_t red;
+        /// @brief The green value of the pixel
         uint8_t green;
+        /// @brief The blue value of the pixel
         uint8_t blue;
+        /// @brief The alpha value of the pixel, which represents the transparency of the pixel. A value of 0 means the pixel is fully transparent, while a value of 255 means the pixel is fully opaque.
         uint8_t alpha;
     };
 
+    /// @brief channels of the pixel in an array for easy access to channels by index
     uint8_t channels[4];
+    /// @brief The concatenated pixel values in a single 32-bit integer for easy comparison of pixels as a single value instead of comparing each channel separately. The order of the channels in the concatenated value is RGBA, with red being the most significant byte and alpha being the least significant byte.
     uint32_t concatenated_pixel_values;
 } qoi_pixel_t;
 
@@ -99,24 +119,30 @@ typedef union
 /// @brief QOI encoder structure
 typedef struct
 {
-    /*
-        A running array[64] (zero-initialized) of previously seen pixel
-        values is maintained by the encoder and decoder. Each pixel that is
-        seen by the encoder and decoder is put into this array at the
-        position formed by a hash function of the color value. 
-    */
+    /// @brief The total number of pixels in the image to encode
+    /// @brief A running array[64] (zero-initialized) of previously seen pixel
+    /// @brief values is maintained by the encoder and decoder. Each pixel that is
+    /// @brief seen by the encoder and decoder is put into this array at the
+    /// @brief position formed by a hash function of the color value.
     qoi_pixel_t pix_buffer[64];
+
+    /// @brief The previous pixel value is used to compare with the current pixel value to determine which QOI opcode to use for encoding the current pixel value
     qoi_pixel_t prev_pixel;
 
+    /// @brief The buffer to store the encoded QOI data before writing to the file
     uint8_t* enc_buffer;
+    /// @brief The offset of the buffer to write the next encoded data to
+    uint32_t buffer_offset;
+    /// @brief The total length of the buffer
+    uint32_t buffer_len;
 
-    size_t buffer_offset;
-    size_t buffer_len;
-
-    size_t pixel_offset, len;
-
-    size_t pixels_written;
-
+    /// @brief The offset of the pixel data to encode in the image
+    uint32_t pixel_offset;
+    /// @brief The total number of pixels encoded so far
+    uint32_t pixels_written;
+    /// @brief The total length of the pixel data to encode (width * height)
+    uint32_t len;
+    /// @brief The run length of the current pixel value being encoded
     uint8_t run;
 } qoi_enc_t;
 
@@ -151,7 +177,7 @@ bool read_qoi_header(qoi_desc_t *desc, void* data);
 bool qoi_enc_init(qoi_desc_t* desc, qoi_enc_t* enc);
 bool qoi_enc_done(qoi_enc_t* enc);
 
-bool qoi_enc_alloc_buffer(qoi_enc_t *enc, size_t data_len);
+bool qoi_enc_alloc_buffer(qoi_enc_t *enc, uint32_t data_len);
 bool qoi_enc_free_buffer(qoi_enc_t *enc);
 bool qoi_enc_reset_buffer(qoi_enc_t* enc);
 
@@ -306,7 +332,7 @@ void write_qoi_header(qoi_desc_t *desc, void* dest)
     uint8_t *byte = (uint8_t*)dest;
 
     /* Write the magic characters to the file first */
-    *(uint32_t*)byte = qoi_to_be32(*(uint32_t*)QOI_MAGIC);
+    *(uint32_t*)byte = *(uint32_t*)QOI_MAGIC;
 
     /* Writes all the metadata information about the image to the file */
 
@@ -416,7 +442,7 @@ void qoi_encode_chunk(qoi_desc_t *desc, qoi_enc_t *enc, void *qoi_pixel_bytes)
     {
         /*  Note that the runlengths 63 and 64 (b111110 and b111111) are illegal as they are
             occupied by the QOI_OP_RGB and QOI_OP_RGBA tags. */
-        if (++enc->run >= 62 || enc->pixel_offset >= enc->len)
+        if (++enc->run >= 62 || enc->pixels_written >= enc->len)
         {
             qoi_enc_run(enc);
         }
@@ -503,7 +529,7 @@ bool qoi_enc_init(qoi_desc_t* desc, qoi_enc_t* enc)
         qoi_initalize_pixel(&enc->pix_buffer[element]); 
     }
 
-    enc->len = (size_t)desc->width * (size_t)desc->height;
+    enc->len = (uint32_t)desc->width * (uint32_t)desc->height;
 
     enc->run = 0;
     enc->pixel_offset = 0;
@@ -519,17 +545,25 @@ bool qoi_enc_init(qoi_desc_t* desc, qoi_enc_t* enc)
     return true;
 }
 
-bool qoi_enc_alloc_buffer(qoi_enc_t *enc, size_t len)
+/// @brief Allocates a buffer for the QOI encoder
+/// @param enc QOI encoder
+/// @param len Length of the buffer to allocate
+/// @return If the buffer was allocated successfully
+bool qoi_enc_alloc_buffer(qoi_enc_t *enc, uint32_t len)
 {
     if (enc == NULL || len == 0) return false;
 
     enc->enc_buffer = (uint8_t*)malloc(len * sizeof(uint8_t));
     if (enc->enc_buffer == NULL) return false;
     enc->buffer_len = len;
+    qoi_enc_reset_buffer(enc);
 
     return true;
 }
 
+/// @brief Frees the buffer allocated for the QOI encoder
+/// @param enc QOI encoder
+/// @return If the buffer was freed successfully
 bool qoi_enc_free_buffer(qoi_enc_t *enc)
 {
     if (enc == NULL || enc->enc_buffer == NULL) return false;
@@ -542,8 +576,8 @@ bool qoi_enc_free_buffer(qoi_enc_t *enc)
 }
 
 /// @brief Resets the buffer of the QOI encoder to the default state
-/// @param enc 
-/// @return If the buffer reset successfully
+/// @param enc QOI encoder
+/// @return If the buffer was reset successfully
 bool qoi_enc_reset_buffer(qoi_enc_t* enc)
 {
     if (enc == NULL) return false;
@@ -551,14 +585,6 @@ bool qoi_enc_reset_buffer(qoi_enc_t* enc)
     enc->buffer_offset = 0;
 
     return true;
-}
-
-/// @brief Checks if the encoder has finished processing the image
-/// @param enc QOI encoder
-/// @return If the encoder has finished encoding all the pixels of the image
-bool qoi_enc_done(qoi_enc_t* enc)
-{
-    return (enc->pixel_offset >= enc->len); /* Has the encoder encoded all the pixels yet? */
 }
 
 #ifdef __cplusplus
