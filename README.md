@@ -8,11 +8,11 @@ Small, QOI (Quite OK Image) encoder demo for Nintendo 64
 
 ## Controls
 
-A - save to QOI
-B - save to raw
-Z - save frame to RAM
-DPad-Up - save to /dev/zero (null)
-DPad-Left View last frame
+- A - save to QOI
+- B - save to raw
+- Z - save frame to RAM
+- DPad-Up - save to /dev/zero (null)
+- DPad-Left View last frame
 
 ## Requirements
 
