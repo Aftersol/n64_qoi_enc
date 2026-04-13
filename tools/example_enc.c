@@ -1,10 +1,14 @@
 /*
 
-    -- example_enc.c -- Reference QOI encoding usage of this library
+    -- example_enc.c -- N64 framebuffer to QOI program
 
-    -- version 1.1 -- revised 2025-04-07
+    - version 1.1.n64.0 -- revised 2026-04-13
 
     -- Changelog --
+    - version 1.1.n64.0 (2026-04-13)
+        - Modified program to use modified sQOI library
+        - Supports RGBA5551 conversion to RGBA32 for conversion to QOI
+        - Updated MIT License copyright year
 
     - version 1.1 (2025-04-07)
         - Implemented error handling in case reading RGBA file fails
@@ -12,10 +16,11 @@
         according to QOI specifications
 
     - version 1.0 (2025-01-13)
+        - Initial release
 
     MIT License
 
-    Copyright (c) 2024-2025 Aftersol
+    Copyright (c) 2024-2026 Aftersol
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
