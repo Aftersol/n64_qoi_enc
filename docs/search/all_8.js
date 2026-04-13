@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['n64_5fcolor16_5fto_5frgba32_0',['n64_color16_to_rgba32',['../colorconv_8h.html#a08a2f074e378fc916f3679b40853859b',1,'colorconv.h']]]
+  ['len_0',['len',['../structqoi__enc__t.html#a96bbf959016e4411c9e6b9812a8be60a',1,'qoi_enc_t']]],
+  ['license_1',['License',['../index.html#autotoc_md7',1,'']]]
 ];

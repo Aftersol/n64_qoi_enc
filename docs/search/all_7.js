@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['main_0',['main',['../main_8c.html#a840291bc02cba5474a4cb46a9b9566fe',1,'main.c']]],
-  ['main_2ec_1',['main.c',['../main_8c.html',1,'']]]
+  ['height_0',['height',['../structqoi__desc__t.html#a6ad4f820ce4e75cda0686fcaad5168be',1,'qoi_desc_t']]],
+  ['how_20to_20build_1',['How to Build',['../index.html#autotoc_md3',1,'']]]
 ];

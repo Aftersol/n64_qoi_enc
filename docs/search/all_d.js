@@ -1,6 +1,9 @@
 var searchData=
 [
-  ['whichscreenshottype_0',['whichScreenshotType',['../main_8c.html#ad11a2ffd2e4f21e02590c1183ab9bfc3',1,'whichScreenshotType:&#160;main.c'],['../main_8c.html#ab18aaccc5ec876c06e35f219fda39472',1,'whichScreenshotType:&#160;main.c']]],
-  ['width_1',['width',['../structqoi__desc__t.html#a325272ddd9a962f05deb905101d25cbd',1,'qoi_desc_t']]],
-  ['write_5fqoi_5fheader_2',['write_qoi_header',['../qoi__enc__n64_8h.html#a3fe82c4b2cb0e0e0fe0afe423984b040',1,'qoi_enc_n64.h']]]
+  ['read_5fbe_5fu16_0',['read_be_u16',['../colorconv_8h.html#ae6956070d6b9a599f6aed8eeb92c5170',1,'colorconv.h']]],
+  ['read_5fqoi_5fheader_1',['read_qoi_header',['../qoi__enc__n64_8h.html#a474699f0e0a175f48eceb314a1080b85',1,'qoi_enc_n64.h']]],
+  ['readme_2emd_2',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
+  ['red_3',['red',['../unionqoi__pixel__t.html#ad47d918910aaa51c73160ac85999d09c',1,'qoi_pixel_t']]],
+  ['requirements_4',['Requirements',['../index.html#autotoc_md2',1,'']]],
+  ['run_5',['run',['../structqoi__enc__t.html#aa90bc2b9950a6a9a3144876047f8bee2',1,'qoi_enc_t']]]
 ];

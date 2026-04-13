@@ -1,5 +1,7 @@
 # QOI Encoder Demo for N64
 
+![A text that says QOI with a beer bottle behind QOI text with N64 logo on top](docs_assets/n64_qoi_logo_256px.png)
+
 https://github.com/user-attachments/assets/0d024e08-101c-45ba-83ee-db06d3b5e936
 
 Small, QOI (Quite OK Image) encoder demo for Nintendo 64

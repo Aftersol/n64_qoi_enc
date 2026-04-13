@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['len_0',['len',['../structqoi__enc__t.html#a96bbf959016e4411c9e6b9812a8be60a',1,'qoi_enc_t']]]
+  ['green_0',['green',['../unionqoi__pixel__t.html#a90d21fa503b626c00cdc8d94863d5877',1,'qoi_pixel_t']]]
 ];
