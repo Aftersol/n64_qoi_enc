@@ -24,7 +24,7 @@ CC = gcc
 CFLAGS = -Wall -O2
 
 TARGET = example_enc
-SOURCES = conv_endian.c example_enc.c
+SOURCES = example_enc.c
 OBJECTS = $(SOURCES:.c=.o)
 
 all: $(TARGET)
