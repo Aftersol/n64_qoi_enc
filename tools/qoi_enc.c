@@ -65,9 +65,12 @@ uint32_t read_be_u32(uint32_t val)
     return (uint32_t)((val_ptr[3] << 0) | (val_ptr[2] << 8) | (val_ptr[1] << 16) | (val_ptr[0] << 24));
 }
 
+const char version_number[] = "vversion 1.1.n64.1";
+const char revised_date[] = "2026-04-13";
+
 void print_version()
 {
-    printf("QOI Encoder\nversion: version 1.1.n64.1 -- revised 2026-04-13\n");
+    printf("QOI Encoder\nversion: %s -- revised %s\n", version_number, revised_date);
 }
 
 void print_help()
