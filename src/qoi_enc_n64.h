@@ -512,7 +512,6 @@ void qoi_encode_chunk(qoi_desc_t *desc, qoi_enc_t *enc, void *qoi_pixel_bytes)
 
     /* Advance the pixel offset by one and sets the previous pixel to the current pixel */
     enc->prev_pixel = cur_pixel;
-    enc->pixel_offset++;
 
 }
 
@@ -531,7 +530,6 @@ bool qoi_enc_init(qoi_desc_t* desc, qoi_enc_t* enc)
     enc->len = (uint32_t)desc->width * (uint32_t)desc->height;
 
     enc->run = 0;
-    enc->pixel_offset = 0;
     enc->pixels_written = 0;
 
     /*  

@@ -554,81 +554,79 @@ $(function(){initNavTree('qoi__enc__n64_8h_source.html','',''); });
 <div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span> </div>
 <div class="line"><a id="l00513" name="l00513"></a><span class="lineno">  513</span>    <span class="comment">/* Advance the pixel offset by one and sets the previous pixel to the current pixel */</span></div>
 <div class="line"><a id="l00514" name="l00514"></a><span class="lineno">  514</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#ad96f78411437d6fad9571a7233c715db">prev_pixel</a> = cur_pixel;</div>
-<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#ad1b3b0718279aa5b0458adf553650329">pixel_offset</a>++;</div>
-<div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span> </div>
-<div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span>}</div>
+<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span> </div>
+<div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span>}</div>
 </div>
-<div class="line"><a id="l00518" name="l00518"></a><span class="lineno">  518</span></div>
-<div class="foldopen" id="foldopen00522" data-start="{" data-end="}">
-<div class="line"><a id="l00522" name="l00522"></a><span class="lineno"><a class="line" href="qoi__enc__n64_8h.html#aa747d0089adf66a2365562b678b485f9">  522</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="qoi__enc__n64_8h.html#aa747d0089adf66a2365562b678b485f9">qoi_enc_init</a>(<a class="code hl_struct" href="structqoi__desc__t.html">qoi_desc_t</a>* desc, <a class="code hl_struct" href="structqoi__enc__t.html">qoi_enc_t</a>* enc)</div>
-<div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span>{</div>
-<div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span>    <span class="keywordflow">if</span> (enc == NULL || desc == NULL) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span> </div>
-<div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span>    <span class="keywordflow">for</span> (uint8_t element = 0; element &lt; 64; element++) {</div>
-<div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span>        <span class="comment">/* Initalize all the pixels in the buffer to zero for each channel of each pixels */</span></div>
-<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span>        <a class="code hl_function" href="qoi__enc__n64_8h.html#aa828246f6df86cb905fd77b80156bccf">qoi_initalize_pixel</a>(&amp;enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a6fe9a2baba843324a2b38e579d22d990">pix_buffer</a>[element]); </div>
-<div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span>    }</div>
-<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span> </div>
-<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a96bbf959016e4411c9e6b9812a8be60a">len</a> = (uint32_t)desc-&gt;<a class="code hl_variable" href="structqoi__desc__t.html#a325272ddd9a962f05deb905101d25cbd">width</a> * (uint32_t)desc-&gt;<a class="code hl_variable" href="structqoi__desc__t.html#a6ad4f820ce4e75cda0686fcaad5168be">height</a>;</div>
-<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span> </div>
-<div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#aa90bc2b9950a6a9a3144876047f8bee2">run</a> = 0;</div>
-<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#ad1b3b0718279aa5b0458adf553650329">pixel_offset</a> = 0;</div>
-<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#aed91781411080b9bed2861b4e1e6fea6">pixels_written</a> = 0;</div>
-<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span> </div>
-<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span>    <span class="comment">/*  </span></div>
-<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span><span class="comment">        The decoder and encoder start with </span></div>
-<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span><span class="comment">        {r: 0, g: 0, b: 0, a: 255}</span></div>
-<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span><span class="comment">        as the previous pixel value. </span></div>
-<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span><span class="comment">    */</span></div>
-<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>    <a class="code hl_function" href="qoi__enc__n64_8h.html#a25cf3942064bf3b5c469c9d3694386b2">qoi_set_pixel_rgba</a>(&amp;enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#ad96f78411437d6fad9571a7233c715db">prev_pixel</a>, 0, 0, 0, 255);</div>
-<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span> </div>
-<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>}</div>
+<div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span></div>
+<div class="foldopen" id="foldopen00521" data-start="{" data-end="}">
+<div class="line"><a id="l00521" name="l00521"></a><span class="lineno"><a class="line" href="qoi__enc__n64_8h.html#aa747d0089adf66a2365562b678b485f9">  521</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="qoi__enc__n64_8h.html#aa747d0089adf66a2365562b678b485f9">qoi_enc_init</a>(<a class="code hl_struct" href="structqoi__desc__t.html">qoi_desc_t</a>* desc, <a class="code hl_struct" href="structqoi__enc__t.html">qoi_enc_t</a>* enc)</div>
+<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>{</div>
+<div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span>    <span class="keywordflow">if</span> (enc == NULL || desc == NULL) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span> </div>
+<div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span>    <span class="keywordflow">for</span> (uint8_t element = 0; element &lt; 64; element++) {</div>
+<div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span>        <span class="comment">/* Initalize all the pixels in the buffer to zero for each channel of each pixels */</span></div>
+<div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span>        <a class="code hl_function" href="qoi__enc__n64_8h.html#aa828246f6df86cb905fd77b80156bccf">qoi_initalize_pixel</a>(&amp;enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a6fe9a2baba843324a2b38e579d22d990">pix_buffer</a>[element]); </div>
+<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span>    }</div>
+<div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span> </div>
+<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a96bbf959016e4411c9e6b9812a8be60a">len</a> = (uint32_t)desc-&gt;<a class="code hl_variable" href="structqoi__desc__t.html#a325272ddd9a962f05deb905101d25cbd">width</a> * (uint32_t)desc-&gt;<a class="code hl_variable" href="structqoi__desc__t.html#a6ad4f820ce4e75cda0686fcaad5168be">height</a>;</div>
+<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span> </div>
+<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#aa90bc2b9950a6a9a3144876047f8bee2">run</a> = 0;</div>
+<div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#aed91781411080b9bed2861b4e1e6fea6">pixels_written</a> = 0;</div>
+<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span> </div>
+<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>    <span class="comment">/*  </span></div>
+<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span><span class="comment">        The decoder and encoder start with </span></div>
+<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span><span class="comment">        {r: 0, g: 0, b: 0, a: 255}</span></div>
+<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span><span class="comment">        as the previous pixel value. </span></div>
+<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span><span class="comment">    */</span></div>
+<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>    <a class="code hl_function" href="qoi__enc__n64_8h.html#a25cf3942064bf3b5c469c9d3694386b2">qoi_set_pixel_rgba</a>(&amp;enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#ad96f78411437d6fad9571a7233c715db">prev_pixel</a>, 0, 0, 0, 255);</div>
+<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span> </div>
+<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>}</div>
 </div>
-<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span></div>
-<div class="foldopen" id="foldopen00551" data-start="{" data-end="}">
-<div class="line"><a id="l00551" name="l00551"></a><span class="lineno"><a class="line" href="qoi__enc__n64_8h.html#aa024e8979e183ffba7bf569eae93e78b">  551</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="qoi__enc__n64_8h.html#aa024e8979e183ffba7bf569eae93e78b">qoi_enc_alloc_buffer</a>(<a class="code hl_struct" href="structqoi__enc__t.html">qoi_enc_t</a> *enc, uint32_t len)</div>
-<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span>{</div>
-<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>    <span class="keywordflow">if</span> (enc == NULL || len == 0) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span> </div>
-<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a3836684d1b1fe2654636b2ee1d92aa58">enc_buffer</a> = (uint8_t*)malloc(len * <span class="keyword">sizeof</span>(uint8_t));</div>
-<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>    <span class="keywordflow">if</span> (enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a3836684d1b1fe2654636b2ee1d92aa58">enc_buffer</a> == NULL) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a899cec1e08bcfa497396baa3584d18e1">buffer_len</a> = len;</div>
-<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>    <a class="code hl_function" href="qoi__enc__n64_8h.html#ac8fa8843656f81ea98518d4eb07144b5">qoi_enc_reset_buffer</a>(enc);</div>
-<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span> </div>
-<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span>}</div>
+<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span></div>
+<div class="foldopen" id="foldopen00549" data-start="{" data-end="}">
+<div class="line"><a id="l00549" name="l00549"></a><span class="lineno"><a class="line" href="qoi__enc__n64_8h.html#aa024e8979e183ffba7bf569eae93e78b">  549</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="qoi__enc__n64_8h.html#aa024e8979e183ffba7bf569eae93e78b">qoi_enc_alloc_buffer</a>(<a class="code hl_struct" href="structqoi__enc__t.html">qoi_enc_t</a> *enc, uint32_t len)</div>
+<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>{</div>
+<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span>    <span class="keywordflow">if</span> (enc == NULL || len == 0) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span> </div>
+<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a3836684d1b1fe2654636b2ee1d92aa58">enc_buffer</a> = (uint8_t*)malloc(len * <span class="keyword">sizeof</span>(uint8_t));</div>
+<div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span>    <span class="keywordflow">if</span> (enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a3836684d1b1fe2654636b2ee1d92aa58">enc_buffer</a> == NULL) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a899cec1e08bcfa497396baa3584d18e1">buffer_len</a> = len;</div>
+<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>    <a class="code hl_function" href="qoi__enc__n64_8h.html#ac8fa8843656f81ea98518d4eb07144b5">qoi_enc_reset_buffer</a>(enc);</div>
+<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span> </div>
+<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>}</div>
 </div>
-<div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span></div>
-<div class="foldopen" id="foldopen00566" data-start="{" data-end="}">
-<div class="line"><a id="l00566" name="l00566"></a><span class="lineno"><a class="line" href="qoi__enc__n64_8h.html#adfa208f98fac9f2875ef8f89dd7caee0">  566</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="qoi__enc__n64_8h.html#adfa208f98fac9f2875ef8f89dd7caee0">qoi_enc_free_buffer</a>(<a class="code hl_struct" href="structqoi__enc__t.html">qoi_enc_t</a> *enc)</div>
-<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>{</div>
-<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>    <span class="keywordflow">if</span> (enc == NULL || enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a3836684d1b1fe2654636b2ee1d92aa58">enc_buffer</a> == NULL) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span> </div>
-<div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span>    free(enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a3836684d1b1fe2654636b2ee1d92aa58">enc_buffer</a>);</div>
-<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a3836684d1b1fe2654636b2ee1d92aa58">enc_buffer</a> = NULL;</div>
-<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a899cec1e08bcfa497396baa3584d18e1">buffer_len</a> = 0;</div>
-<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span> </div>
-<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>}</div>
+<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span></div>
+<div class="foldopen" id="foldopen00564" data-start="{" data-end="}">
+<div class="line"><a id="l00564" name="l00564"></a><span class="lineno"><a class="line" href="qoi__enc__n64_8h.html#adfa208f98fac9f2875ef8f89dd7caee0">  564</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="qoi__enc__n64_8h.html#adfa208f98fac9f2875ef8f89dd7caee0">qoi_enc_free_buffer</a>(<a class="code hl_struct" href="structqoi__enc__t.html">qoi_enc_t</a> *enc)</div>
+<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>{</div>
+<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>    <span class="keywordflow">if</span> (enc == NULL || enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a3836684d1b1fe2654636b2ee1d92aa58">enc_buffer</a> == NULL) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span> </div>
+<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>    free(enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a3836684d1b1fe2654636b2ee1d92aa58">enc_buffer</a>);</div>
+<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a3836684d1b1fe2654636b2ee1d92aa58">enc_buffer</a> = NULL;</div>
+<div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a899cec1e08bcfa497396baa3584d18e1">buffer_len</a> = 0;</div>
+<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span> </div>
+<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span>}</div>
 </div>
-<div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span></div>
-<div class="foldopen" id="foldopen00580" data-start="{" data-end="}">
-<div class="line"><a id="l00580" name="l00580"></a><span class="lineno"><a class="line" href="qoi__enc__n64_8h.html#ac8fa8843656f81ea98518d4eb07144b5">  580</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="qoi__enc__n64_8h.html#ac8fa8843656f81ea98518d4eb07144b5">qoi_enc_reset_buffer</a>(<a class="code hl_struct" href="structqoi__enc__t.html">qoi_enc_t</a>* enc)</div>
-<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span>{</div>
-<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span>    <span class="keywordflow">if</span> (enc == NULL) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span></div>
+<div class="foldopen" id="foldopen00578" data-start="{" data-end="}">
+<div class="line"><a id="l00578" name="l00578"></a><span class="lineno"><a class="line" href="qoi__enc__n64_8h.html#ac8fa8843656f81ea98518d4eb07144b5">  578</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="qoi__enc__n64_8h.html#ac8fa8843656f81ea98518d4eb07144b5">qoi_enc_reset_buffer</a>(<a class="code hl_struct" href="structqoi__enc__t.html">qoi_enc_t</a>* enc)</div>
+<div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span>{</div>
+<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>    <span class="keywordflow">if</span> (enc == NULL) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span> </div>
+<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a142fa22642f8476dd064a014504dba4c">buffer_offset</a> = 0;</div>
 <div class="line"><a id="l00583" name="l00583"></a><span class="lineno">  583</span> </div>
-<div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span>    enc-&gt;<a class="code hl_variable" href="structqoi__enc__t.html#a142fa22642f8476dd064a014504dba4c">buffer_offset</a> = 0;</div>
-<div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span> </div>
-<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>}</div>
+<div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span>}</div>
 </div>
-<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span> </div>
-<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span><span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span>}</div>
-<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span> </div>
-<div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span><span class="preprocessor">#endif </span><span class="comment">// QOI_ENC_N64_H</span></div>
+<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span> </div>
+<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span><span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>}</div>
+<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span> </div>
+<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span><span class="preprocessor">#endif </span><span class="comment">// QOI_ENC_N64_H</span></div>
 <div class="ttc" id="aqoi__enc__n64_8h_html_a006f72b09804aa1c903d4dd1d236ddcf"><div class="ttname"><a href="qoi__enc__n64_8h.html#a006f72b09804aa1c903d4dd1d236ddcf">qoi_enc_rgba</a></div><div class="ttdeci">static void qoi_enc_rgba(qoi_enc_t *enc, qoi_pixel_t px)</div><div class="ttdoc">Place the RGBA information into the QOI file.</div><div class="ttdef"><b>Definition</b> <a href="#l00363">qoi_enc_n64.h:363</a></div></div>
 <div class="ttc" id="aqoi__enc__n64_8h_html_a01fb42ce40f81afe7850e02ed55407f5"><div class="ttname"><a href="qoi__enc__n64_8h.html#a01fb42ce40f81afe7850e02ed55407f5">qoi_get_be32</a></div><div class="ttdeci">static uint32_t qoi_get_be32(uint32_t value)</div><div class="ttdoc">Extract a 32-bit big endian integer regardless of endianness.</div><div class="ttdef"><b>Definition</b> <a href="#l00196">qoi_enc_n64.h:196</a></div></div>
 <div class="ttc" id="aqoi__enc__n64_8h_html_a031bbfff5ef9914642e2c87eeda257b6"><div class="ttname"><a href="qoi__enc__n64_8h.html#a031bbfff5ef9914642e2c87eeda257b6">QOI_OP_RGB</a></div><div class="ttdeci">#define QOI_OP_RGB</div><div class="ttdoc">11111110: Followed by 3 bytes of RGB data, representing the color of the pixel. This is used when the...</div><div class="ttdef"><b>Definition</b> <a href="#l00062">qoi_enc_n64.h:62</a></div></div>
@@ -652,8 +650,8 @@ $(function(){initNavTree('qoi__enc__n64_8h_source.html','',''); });
 <div class="ttc" id="aqoi__enc__n64_8h_html_a98b23317ef4eb147cbaee7018516dc43ac80edf3db3d51648e18f35f52de33c7a"><div class="ttname"><a href="qoi__enc__n64_8h.html#a98b23317ef4eb147cbaee7018516dc43ac80edf3db3d51648e18f35f52de33c7a">QOI_BLUE</a></div><div class="ttdeci">@ QOI_BLUE</div><div class="ttdef"><b>Definition</b> <a href="#l00074">qoi_enc_n64.h:74</a></div></div>
 <div class="ttc" id="aqoi__enc__n64_8h_html_a9c3144ce899be5f030a8ef23d99a1c65"><div class="ttname"><a href="qoi__enc__n64_8h.html#a9c3144ce899be5f030a8ef23d99a1c65">qoi_cmp_pixel</a></div><div class="ttdeci">static bool qoi_cmp_pixel(qoi_pixel_t pixel1, qoi_pixel_t pixel2, const uint8_t channels)</div><div class="ttdoc">Compares two pixels for the same color.</div><div class="ttdef"><b>Definition</b> <a href="#l00229">qoi_enc_n64.h:229</a></div></div>
 <div class="ttc" id="aqoi__enc__n64_8h_html_a9ea428ee90384855643116dff04c30eb"><div class="ttname"><a href="qoi__enc__n64_8h.html#a9ea428ee90384855643116dff04c30eb">qoi_enc_run</a></div><div class="ttdeci">static void qoi_enc_run(qoi_enc_t *enc)</div><div class="ttdoc">Place the run length of a pixel color information into the QOI opcode.</div><div class="ttdef"><b>Definition</b> <a href="#l00408">qoi_enc_n64.h:408</a></div></div>
-<div class="ttc" id="aqoi__enc__n64_8h_html_aa024e8979e183ffba7bf569eae93e78b"><div class="ttname"><a href="qoi__enc__n64_8h.html#aa024e8979e183ffba7bf569eae93e78b">qoi_enc_alloc_buffer</a></div><div class="ttdeci">bool qoi_enc_alloc_buffer(qoi_enc_t *enc, uint32_t data_len)</div><div class="ttdoc">Allocates a buffer for the QOI encoder.</div><div class="ttdef"><b>Definition</b> <a href="#l00551">qoi_enc_n64.h:551</a></div></div>
-<div class="ttc" id="aqoi__enc__n64_8h_html_aa747d0089adf66a2365562b678b485f9"><div class="ttname"><a href="qoi__enc__n64_8h.html#aa747d0089adf66a2365562b678b485f9">qoi_enc_init</a></div><div class="ttdeci">bool qoi_enc_init(qoi_desc_t *desc, qoi_enc_t *enc)</div><div class="ttdoc">Initalize the QOI encoder to the default state.</div><div class="ttdef"><b>Definition</b> <a href="#l00522">qoi_enc_n64.h:522</a></div></div>
+<div class="ttc" id="aqoi__enc__n64_8h_html_aa024e8979e183ffba7bf569eae93e78b"><div class="ttname"><a href="qoi__enc__n64_8h.html#aa024e8979e183ffba7bf569eae93e78b">qoi_enc_alloc_buffer</a></div><div class="ttdeci">bool qoi_enc_alloc_buffer(qoi_enc_t *enc, uint32_t data_len)</div><div class="ttdoc">Allocates a buffer for the QOI encoder.</div><div class="ttdef"><b>Definition</b> <a href="#l00549">qoi_enc_n64.h:549</a></div></div>
+<div class="ttc" id="aqoi__enc__n64_8h_html_aa747d0089adf66a2365562b678b485f9"><div class="ttname"><a href="qoi__enc__n64_8h.html#aa747d0089adf66a2365562b678b485f9">qoi_enc_init</a></div><div class="ttdeci">bool qoi_enc_init(qoi_desc_t *desc, qoi_enc_t *enc)</div><div class="ttdoc">Initalize the QOI encoder to the default state.</div><div class="ttdef"><b>Definition</b> <a href="#l00521">qoi_enc_n64.h:521</a></div></div>
 <div class="ttc" id="aqoi__enc__n64_8h_html_aa828246f6df86cb905fd77b80156bccf"><div class="ttname"><a href="qoi__enc__n64_8h.html#aa828246f6df86cb905fd77b80156bccf">qoi_initalize_pixel</a></div><div class="ttdeci">void qoi_initalize_pixel(qoi_pixel_t *pixel)</div><div class="ttdoc">Initalizes the pixels to the default state.</div><div class="ttdef"><b>Definition</b> <a href="#l00269">qoi_enc_n64.h:269</a></div></div>
 <div class="ttc" id="aqoi__enc__n64_8h_html_aad0d45b041ccfd9624e21fc2f48985ed"><div class="ttname"><a href="qoi__enc__n64_8h.html#aad0d45b041ccfd9624e21fc2f48985ed">qoi_set_channels</a></div><div class="ttdeci">void qoi_set_channels(qoi_desc_t *desc, uint8_t channels)</div><div class="ttdoc">Sets the amount of channels of an image for QOI descriptor.</div><div class="ttdef"><b>Definition</b> <a href="#l00311">qoi_enc_n64.h:311</a></div></div>
 <div class="ttc" id="aqoi__enc__n64_8h_html_ab08350e53912b532e3a03d29e79662ad"><div class="ttname"><a href="qoi__enc__n64_8h.html#ab08350e53912b532e3a03d29e79662ad">QOI_OP_LUMA</a></div><div class="ttdeci">#define QOI_OP_LUMA</div><div class="ttdoc">10xxxxxx: The color is represented by a luminance value and two chroma values.</div><div class="ttdef"><b>Definition</b> <a href="#l00070">qoi_enc_n64.h:70</a></div></div>
@@ -665,9 +663,9 @@ $(function(){initNavTree('qoi__enc__n64_8h_source.html','',''); });
 <div class="ttc" id="aqoi__enc__n64_8h_html_abd94d537a4d82c85f91df33cb9d1c2ac"><div class="ttname"><a href="qoi__enc__n64_8h.html#abd94d537a4d82c85f91df33cb9d1c2ac">qoi_colorspace</a></div><div class="ttdeci">qoi_colorspace</div><div class="ttdef"><b>Definition</b> <a href="#l00076">qoi_enc_n64.h:76</a></div></div>
 <div class="ttc" id="aqoi__enc__n64_8h_html_abd94d537a4d82c85f91df33cb9d1c2aca94f57d577c68140811e454d9d0237f2a"><div class="ttname"><a href="qoi__enc__n64_8h.html#abd94d537a4d82c85f91df33cb9d1c2aca94f57d577c68140811e454d9d0237f2a">QOI_LINEAR</a></div><div class="ttdeci">@ QOI_LINEAR</div><div class="ttdef"><b>Definition</b> <a href="#l00076">qoi_enc_n64.h:76</a></div></div>
 <div class="ttc" id="aqoi__enc__n64_8h_html_abd94d537a4d82c85f91df33cb9d1c2acab9ce7d375c7c2380d7742b93a82a1200"><div class="ttname"><a href="qoi__enc__n64_8h.html#abd94d537a4d82c85f91df33cb9d1c2acab9ce7d375c7c2380d7742b93a82a1200">QOI_SRGB</a></div><div class="ttdeci">@ QOI_SRGB</div><div class="ttdef"><b>Definition</b> <a href="#l00076">qoi_enc_n64.h:76</a></div></div>
-<div class="ttc" id="aqoi__enc__n64_8h_html_ac8fa8843656f81ea98518d4eb07144b5"><div class="ttname"><a href="qoi__enc__n64_8h.html#ac8fa8843656f81ea98518d4eb07144b5">qoi_enc_reset_buffer</a></div><div class="ttdeci">bool qoi_enc_reset_buffer(qoi_enc_t *enc)</div><div class="ttdoc">Resets the buffer of the QOI encoder to the default state.</div><div class="ttdef"><b>Definition</b> <a href="#l00580">qoi_enc_n64.h:580</a></div></div>
+<div class="ttc" id="aqoi__enc__n64_8h_html_ac8fa8843656f81ea98518d4eb07144b5"><div class="ttname"><a href="qoi__enc__n64_8h.html#ac8fa8843656f81ea98518d4eb07144b5">qoi_enc_reset_buffer</a></div><div class="ttdeci">bool qoi_enc_reset_buffer(qoi_enc_t *enc)</div><div class="ttdoc">Resets the buffer of the QOI encoder to the default state.</div><div class="ttdef"><b>Definition</b> <a href="#l00578">qoi_enc_n64.h:578</a></div></div>
 <div class="ttc" id="aqoi__enc__n64_8h_html_adea51ab58480fbfb7e6418695df320d1"><div class="ttname"><a href="qoi__enc__n64_8h.html#adea51ab58480fbfb7e6418695df320d1">qoi_enc_index</a></div><div class="ttdeci">static void qoi_enc_index(qoi_enc_t *enc, uint8_t index_pos)</div><div class="ttdoc">Place the index position of the buffer into the QOI file.</div><div class="ttdef"><b>Definition</b> <a href="#l00376">qoi_enc_n64.h:376</a></div></div>
-<div class="ttc" id="aqoi__enc__n64_8h_html_adfa208f98fac9f2875ef8f89dd7caee0"><div class="ttname"><a href="qoi__enc__n64_8h.html#adfa208f98fac9f2875ef8f89dd7caee0">qoi_enc_free_buffer</a></div><div class="ttdeci">bool qoi_enc_free_buffer(qoi_enc_t *enc)</div><div class="ttdoc">Frees the buffer allocated for the QOI encoder.</div><div class="ttdef"><b>Definition</b> <a href="#l00566">qoi_enc_n64.h:566</a></div></div>
+<div class="ttc" id="aqoi__enc__n64_8h_html_adfa208f98fac9f2875ef8f89dd7caee0"><div class="ttname"><a href="qoi__enc__n64_8h.html#adfa208f98fac9f2875ef8f89dd7caee0">qoi_enc_free_buffer</a></div><div class="ttdeci">bool qoi_enc_free_buffer(qoi_enc_t *enc)</div><div class="ttdoc">Frees the buffer allocated for the QOI encoder.</div><div class="ttdef"><b>Definition</b> <a href="#l00564">qoi_enc_n64.h:564</a></div></div>
 <div class="ttc" id="aqoi__enc__n64_8h_html_ae5d48bf6dac2a377f464f2cf6bafa46d"><div class="ttname"><a href="qoi__enc__n64_8h.html#ae5d48bf6dac2a377f464f2cf6bafa46d">QOI_OP_RUN</a></div><div class="ttdeci">#define QOI_OP_RUN</div><div class="ttdoc">11xxxxxx: The color is the same as the previous pixel, and this run continues for xx pixels.</div><div class="ttdef"><b>Definition</b> <a href="#l00072">qoi_enc_n64.h:72</a></div></div>
 <div class="ttc" id="aqoi__enc__n64_8h_html_aec333b9e4c757883bb7f62c24d008890"><div class="ttname"><a href="qoi__enc__n64_8h.html#aec333b9e4c757883bb7f62c24d008890">qoi_enc_rgb</a></div><div class="ttdeci">static void qoi_enc_rgb(qoi_enc_t *enc, qoi_pixel_t px)</div><div class="ttdoc">Place the RGB information into the QOI file.</div><div class="ttdef"><b>Definition</b> <a href="#l00351">qoi_enc_n64.h:351</a></div></div>
 <div class="ttc" id="aqoi__enc__n64_8h_html_aecaa7e9556d5993c24d0ae8ee999dbf9"><div class="ttname"><a href="qoi__enc__n64_8h.html#aecaa7e9556d5993c24d0ae8ee999dbf9">qoi_to_be32</a></div><div class="ttdeci">static uint32_t qoi_to_be32(uint32_t value)</div><div class="ttdoc">Write a 32-bit big endian integer regardless of endianness.</div><div class="ttdef"><b>Definition</b> <a href="#l00212">qoi_enc_n64.h:212</a></div></div>
