@@ -150,7 +150,7 @@ bool save_screenshot_null(surface_t* disp, uint32_t *bytesWritten) {
     // Get the framebuffer data
     framebuffer = (uint16_t*)disp->buffer;
 
-    *bytesWritten = 0;
+    *bytesWritten = 22;
 
     qoi_set_dimensions(&desc, 320, 240); // Resolution of the N64 framebuffer
 
@@ -165,8 +165,6 @@ bool save_screenshot_null(surface_t* disp, uint32_t *bytesWritten) {
 
     qoi_enc_set_buffer(&enc, enc_buffer, ENC_BUFFER_SIZE, false);
     //qoi_enc_alloc_buffer(&enc, ENC_BUFFER_SIZE, false);
-
-    *bytesWritten += 22; // Account for the header bytes
 
     // Encode the pixel data
     for (uint32_t px = 0; px < enc.len; px++)
