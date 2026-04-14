@@ -53,6 +53,8 @@
 
 #include "qoi_enc_n64.h"
 
+#define ENC_BUFFER_SIZE 16384
+
 uint16_t read_be_u16(uint16_t val)
 {
     uint8_t* val_ptr = (uint8_t*)&val;
@@ -90,8 +92,7 @@ int main(int argc, char* argv[])
     size_t file_size;
     uint16_t* frame_buffer;
     uint32_t* frame_buffer32;
-
-    const uint32_t enc_buffer_size = 512;
+    uint8_t enc_buffer[ENC_BUFFER_SIZE];
 
     print_version();
     
@@ -225,8 +226,11 @@ int main(int argc, char* argv[])
     printf("Encoding %s to %s. Please wait . . .\n", argv[1], argv[4]);
 
     qoi_enc_init(&desc, &enc);
-    qoi_enc_alloc_buffer(&enc, enc_buffer_size);
-    qoi_enc_reset_buffer(&enc);
+
+    /* qoi_enc_alloc_buffer(&enc, ENC_BUFFER_SIZE); */
+
+    qoi_enc_set_buffer(&enc, enc_buffer, ENC_BUFFER_SIZE, false);
+    
 
     write_qoi_header(&desc, header);
 
@@ -255,7 +259,10 @@ int main(int argc, char* argv[])
         }
         
     }
+
     fwrite(QOI_PADDING, sizeof(uint64_t), 1, fp);
+    
+    /* qoi_enc_free_buffer(&enc); */
 
     fclose(fp);
 

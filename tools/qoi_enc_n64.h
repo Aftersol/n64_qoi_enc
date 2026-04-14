@@ -50,6 +50,12 @@ extern "C" {
 #include <stddef.h>
 #include <stdbool.h>
 
+#define QOI_ALLOW_MEM_ALLOC 1
+#define QOI_ALLOW_MEM_FREE 1
+
+#if QOI_ALLOW_MEM_ALLOC
+#include <stdlib.h>
+#endif
 
 /* QOI OPCODES */
 
@@ -136,6 +142,8 @@ typedef struct
     /// @brief The total length of the buffer
     uint32_t buffer_len;
 
+    /// @brief The offset of the pixel data to encode in the image
+    uint32_t pixel_offset;
     /// @brief The total number of pixels encoded so far
     uint32_t pixels_written;
     /// @brief The total length of the pixel data to encode (width * height)
@@ -173,10 +181,15 @@ bool read_qoi_header(qoi_desc_t *desc, void* data);
 /* QOI encoder functions */
 
 bool qoi_enc_init(qoi_desc_t* desc, qoi_enc_t* enc);
-bool qoi_enc_done(qoi_enc_t* enc);
 
-bool qoi_enc_alloc_buffer(qoi_enc_t *enc, uint32_t data_len);
+#if QOI_ALLOW_MEM_ALLOC
+bool qoi_enc_alloc_buffer(qoi_enc_t *enc, uint32_t data_len, bool shouldFreePrevBuffer);
+bool qoi_enc_set_buffer(qoi_enc_t *enc, void* newBuffer, uint32_t len, bool shouldFreePrevBuffer);
 bool qoi_enc_free_buffer(qoi_enc_t *enc);
+#else
+bool qoi_enc_set_buffer(qoi_enc_t *enc, void* newBuffer, uint32_t len);
+#endif
+
 bool qoi_enc_reset_buffer(qoi_enc_t* enc);
 
 void qoi_encode_chunk(qoi_desc_t *desc, qoi_enc_t *enc, void *qoi_pixel_bytes);
@@ -292,7 +305,7 @@ bool qoi_desc_init(qoi_desc_t *desc)
     desc->colorspace = 0;
 
     return true;
-}
+};
 
 /// @brief Sets the image dimensions of an image for QOI descriptor
 /// @param desc QOI descriptor to set the dimensions for
@@ -515,6 +528,7 @@ void qoi_encode_chunk(qoi_desc_t *desc, qoi_enc_t *enc, void *qoi_pixel_bytes)
 }
 
 /// @brief Initalize the QOI encoder to the default state
+/// @param desc descriptor of the QOI file
 /// @param enc QOI encoder
 /// @return If the encoder initialized successfully
 bool qoi_enc_init(qoi_desc_t* desc, qoi_enc_t* enc)
@@ -541,35 +555,91 @@ bool qoi_enc_init(qoi_desc_t* desc, qoi_enc_t* enc)
     return true;
 }
 
-/// @brief Allocates a buffer for the QOI encoder
+#if QOI_ALLOW_MEM_ALLOC
+/// @brief Sets a buffer for the QOI encoder, automatically free if free buffer flag is set
 /// @param enc QOI encoder
+/// @param newBuffer the new buffer the encoder should be assigned to
+/// @param len Length of the buffer to allocate
+/// @param shouldFreePrevBuffer if true, free previous buffer
+/// @return If the buffer was allocated successfully
+bool qoi_enc_set_buffer(qoi_enc_t *enc, void* newBuffer, uint32_t len, bool shouldFreePrevBuffer) 
+#else
+/// @brief Sets a buffer for the QOI encoder, automatically free if free buffer flag is set
+/// @param enc QOI encoder
+/// @param newBuffer the new buffer the encoder should be assigned to
 /// @param len Length of the buffer to allocate
 /// @return If the buffer was allocated successfully
-bool qoi_enc_alloc_buffer(qoi_enc_t *enc, uint32_t len)
+bool qoi_enc_set_buffer(qoi_enc_t *enc, void* newBuffer, uint32_t len)
+#endif
 {
-    if (enc == NULL || len == 0) return false;
+    if (enc == NULL || buffer == NULL || len == 0) return false;
+    
+    #if QOI_ALLOW_MEM_ALLOC
+    if (shouldFreePrevBuffer == true && enc->enc_buffer)
+    {
+        free(enc->enc_buffer);
+    }
+    #endif
 
-    enc->enc_buffer = (uint8_t*)malloc(len * sizeof(uint8_t));
-    if (enc->enc_buffer == NULL) return false;
+    enc->enc_buffer = (uint8_t*)newBuffer;
     enc->buffer_len = len;
+
     qoi_enc_reset_buffer(enc);
 
     return true;
 }
 
+/// @brief Allocates a buffer for the QOI encoder
+/// @param enc QOI encoder
+/// @param len Length of the buffer to allocate
+/// @param shouldFreePrevBuffer if true, free previous buffer
+/// @return If the buffer was allocated successfully
+#if QOI_ALLOW_MEM_ALLOC
+bool qoi_enc_alloc_buffer(qoi_enc_t *enc, uint32_t len, bool shouldFreePrevBuffer)
+{
+    if (enc == NULL || len == 0) return false;
+
+    uint8_t *newBuffer = (uint8_t*)malloc(len * sizeof(uint8_t));;
+    
+    if (newBuffer == NULL) 
+    {
+        return false;
+    }
+
+    if (shouldFreePrevBuffer == true && enc->enc_buffer) {
+        free(enc->enc_buffer);
+    }
+
+    enc->enc_buffer = newBuffer;
+    enc->buffer_len = len;
+
+    qoi_enc_reset_buffer(enc);
+
+    return true;
+}
+#endif
+
+
+#if QOI_ALLOW_MEM_ALLOC
 /// @brief Frees the buffer allocated for the QOI encoder
 /// @param enc QOI encoder
 /// @return If the buffer was freed successfully
 bool qoi_enc_free_buffer(qoi_enc_t *enc)
 {
-    if (enc == NULL || enc->enc_buffer == NULL) return false;
+    if (enc == NULL || enc->enc_buffer == NULL) 
+        goto qoi_enc_free_buffer_skip;
 
     free(enc->enc_buffer);
+
     enc->enc_buffer = NULL;
     enc->buffer_len = 0;
 
+    qoi_enc_reset_buffer(enc);
+
+qoi_enc_free_buffer_skip:
     return true;
 }
+#endif
 
 /// @brief Resets the buffer of the QOI encoder to the default state
 /// @param enc QOI encoder

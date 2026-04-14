@@ -38,6 +38,8 @@
 #include "qoi_enc_n64.h"
 #include "colorconv.h"
 
+#define ENC_BUFFER_SIZE 4096
+
 /// @brief Checks what type of screenshot was taken to perform different actions based on the type of screenshot taken, such as displaying different information on the screen or saving the screenshot in a different way.
 enum whichScreenshotType {
     /// @brief No screenshot has been taken yet
@@ -93,7 +95,9 @@ bool save_screenshot(surface_t* disp, const char* filename, uint32_t *bytesWritt
     write_qoi_header(&desc, header);
     fwrite(header, 1, sizeof(header), fp);
     
-    qoi_enc_alloc_buffer(&enc, enc_buffer_size);
+    uint8_t enc_buffer[ENC_BUFFER_SIZE];
+    qoi_enc_set_buffer(&enc, enc_buffer, ENC_BUFFER_SIZE, false);
+    //qoi_enc_alloc_buffer(&enc, ENC_BUFFER_SIZE);
 
     *bytesWritten += 22; // 14+8=22
 
@@ -121,7 +125,7 @@ bool save_screenshot(surface_t* disp, const char* filename, uint32_t *bytesWritt
 
     fwrite(QOI_PADDING, sizeof(uint8_t), 8, fp); // Write the padding bytes
 
-    qoi_enc_free_buffer(&enc);
+    //qoi_enc_free_buffer(&enc);
 
     fclose(fp);
 
@@ -136,8 +140,6 @@ bool save_screenshot_null(surface_t* disp, uint32_t *bytesWritten) {
     if (disp == NULL || bytesWritten == NULL) return false;
     // Get the framebuffer data
     uint16_t* framebuffer = (uint16_t*)disp->buffer;
-
-    const uint32_t enc_buffer_size = 4096;
 
     // Save the screenshot using the QOI encoder
     qoi_desc_t desc;
@@ -155,7 +157,10 @@ bool save_screenshot_null(surface_t* disp, uint32_t *bytesWritten) {
     // Write the QOI header
     uint8_t header[14];
     write_qoi_header(&desc, header);
-    qoi_enc_alloc_buffer(&enc, enc_buffer_size);
+
+    uint8_t enc_buffer[ENC_BUFFER_SIZE];
+    qoi_enc_set_buffer(&enc, enc_buffer, ENC_BUFFER_SIZE, false);
+    //qoi_enc_alloc_buffer(&enc, ENC_BUFFER_SIZE, false);
 
     *bytesWritten += 22; // Account for the header bytes
 
@@ -180,7 +185,7 @@ bool save_screenshot_null(surface_t* disp, uint32_t *bytesWritten) {
         
     }
 
-    qoi_enc_free_buffer(&enc);
+    //qoi_enc_free_buffer(&enc);
 
     return true;
 }
