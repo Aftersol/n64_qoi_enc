@@ -85,13 +85,25 @@ int main(int argc, char* argv[])
 
     qoi_desc_t desc;
     qoi_enc_t enc;
-    uint8_t* header, *file_buffer0, *file_buffer1;
+    
+    /* Raw file to be opened */
     FILE* fp;
+    /* File size of the raw file */
+    size_t file_size;
+
+    uint8_t* file_buffer0, *file_buffer1;
+
+    uint8_t header[16];
+    
     uint32_t width, height;
     uint8_t channels, colorspace;
-    size_t file_size;
-    uint16_t* frame_buffer;
-    uint32_t* frame_buffer32;
+    
+    /* 16-bit RGBA5551 */
+    uint16_t* rgba5551_frame_buffer;
+    /* Scratchpad when converted to RGBA32 */
+    uint32_t* rgba32_frame_buffer;
+
+    /* For attaching it to encoder to limit memory consumption */
     uint8_t enc_buffer[ENC_BUFFER_SIZE];
 
     print_version();
@@ -160,8 +172,8 @@ int main(int argc, char* argv[])
 
     fseek(fp, 0, SEEK_SET);
 
-    file_buffer0 = (uint8_t*)calloc(file_size + 1, sizeof(uint8_t));
-    file_buffer1 = (uint8_t*)calloc(file_size + 1, sizeof(uint8_t)*2);
+    file_buffer0 = (uint8_t*)calloc(file_size + 1, sizeof(uint8_t)); /* RGBA5551 framebuffer from file */
+    file_buffer1 = (uint8_t*)calloc(file_size + 1, sizeof(uint8_t)*2); /* RGBA framebuffer */
     
     if (!file_buffer0 || !file_buffer1)
     {
@@ -185,14 +197,14 @@ int main(int argc, char* argv[])
 
     fclose(fp);
 
-    frame_buffer = (uint16_t*)file_buffer0;
+    rgba5551_frame_buffer = (uint16_t*)file_buffer0;
 
     for (size_t i = 0; i < file_size / sizeof(uint16_t); i++) {
             
-        int r = (read_be_u16(frame_buffer[i]) >> 11) & 0x1F;
-        int g = (read_be_u16(frame_buffer[i]) >>  6) & 0x1F;
-        int b = (read_be_u16(frame_buffer[i]) >>  1) & 0x1F;
-        int a = (read_be_u16(frame_buffer[i]) >>  0) & 0x01;
+        int r = (read_be_u16(rgba5551_frame_buffer[i]) >> 11) & 0x1F;
+        int g = (read_be_u16(rgba5551_frame_buffer[i]) >>  6) & 0x1F;
+        int b = (read_be_u16(rgba5551_frame_buffer[i]) >>  1) & 0x1F;
+        int a = (read_be_u16(rgba5551_frame_buffer[i]) >>  0) & 0x01;
     
         // expand to 8 bit
         r = (r << 3) | (r >> 2);
@@ -207,7 +219,9 @@ int main(int argc, char* argv[])
 
     }
 
-    header = (uint8_t*)calloc(32, sizeof(uint8_t));
+    free(file_buffer0); /* Destroy RGBA5551 file */
+    file_buffer0 = NULL;
+    rgba5551_frame_buffer = NULL;
 
     qoi_desc_init(&desc);
     
@@ -217,9 +231,7 @@ int main(int argc, char* argv[])
     
     fp = fopen(argv[4], "wb");
     if (!fp) {
-        free(file_buffer0);
         free(file_buffer1);
-        free(header);
         return 1;
     }
     
@@ -230,20 +242,19 @@ int main(int argc, char* argv[])
     /* qoi_enc_alloc_buffer(&enc, ENC_BUFFER_SIZE); */
 
     qoi_enc_set_buffer(&enc, enc_buffer, ENC_BUFFER_SIZE, false);
-    
 
     write_qoi_header(&desc, header);
 
     fwrite(header, 1, 14, fp);
 
-    free(header);
-    header = NULL;
+    /* Begin encoding RGBA32 data to QOI file */
     
-    frame_buffer32 = (uint32_t*)file_buffer1;
+    rgba32_frame_buffer = (uint32_t*)file_buffer1;
+
     /* Encode the pixel data */
     for (uint32_t px = 0; px < enc.len; px++)
     {
-        uint32_t rgba = frame_buffer32[px];
+        uint32_t rgba = rgba32_frame_buffer[px];
         qoi_encode_chunk(&desc, &enc, &rgba);
 
         if (enc.pixels_written >= enc.len) {
@@ -260,17 +271,19 @@ int main(int argc, char* argv[])
         
     }
 
+    /* Write QOI padding per QOI specifications */
     fwrite(QOI_PADDING, sizeof(uint64_t), 1, fp);
     
     /* qoi_enc_free_buffer(&enc); */
 
+    /* Finish writing file */
     fclose(fp);
 
     printf("Done\n");
 
-
-    free(file_buffer0);
     free(file_buffer1);
+    file_buffer1 = NULL;
+    rgba32_frame_buffer = NULL;
 
     return 0;
 }
