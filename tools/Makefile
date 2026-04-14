@@ -21,7 +21,7 @@
 #
 
 CC = gcc
-CFLAGS = -Wall -O2
+CFLAGS = -Wall -O2 -Wpedantic
 
 TARGET = qoi_enc
 SOURCES = qoi_enc.c.c
