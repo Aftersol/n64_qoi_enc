@@ -407,8 +407,6 @@ int main(void) {
         }
 
         if (pressed.b) {
-
-            surface_t img = surface_alloc(FMT_RGBA16, 320, 240);
             if (!sdCardExists) {
                 mutex_lock(&mutex);
 
@@ -420,6 +418,7 @@ int main(void) {
                 mutex_unlock(&mutex);
             }
             else {
+                surface_t img = surface_alloc(FMT_RGBA16, 320, 240);
                 bool successfulScreenshot = false;
 
                 rdpq_attach(&img, NULL);
@@ -451,7 +450,7 @@ int main(void) {
             
         }
         else if (pressed.a) {
-            surface_t img = surface_alloc(FMT_RGBA16, 320, 240);
+            
             if (!sdCardExists) {
                 mutex_lock(&mutex);
 
@@ -463,6 +462,7 @@ int main(void) {
                 mutex_unlock(&mutex);
             }
             else {
+                surface_t img = surface_alloc(FMT_RGBA16, 320, 240);
                 bool successfulScreenshot = false;
 
                 rdpq_attach(&img, NULL);
