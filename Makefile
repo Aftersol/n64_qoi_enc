@@ -27,17 +27,18 @@ include $(N64_INST)/include/n64.mk
 all: qoi_enc.z64
 .PHONY: all
 
+ASSETS_DIR = assets
 FILESYSTEM_DIR = filesystem
 
-assets = $(FILESYSTEM_DIR)/n64brew.png $(FILESYSTEM_DIR)/background.png $(FILESYSTEM_DIR)/pm5544.png
-assets_conv = $(addprefix filesystem/,$(notdir $(assets:%.png=%.sprite)))
+assets = $(ASSETS_DIR)/n64brew.png $(ASSETS_DIR)/pm5544.png
+assets_conv = $(addprefix $(FILESYSTEM_DIR)/,$(notdir $(assets:%.png=%.sprite)))
 
 AUDIOCONV_FLAGS ?=
 MKSPRITE_FLAGS ?=
 
 OBJS = $(BUILD_DIR)/main.o
 
-$(FILESYSTEM_DIR)/%.sprite: $(FILESYSTEM_DIR)/%.png
+$(FILESYSTEM_DIR)/%.sprite: $(ASSETS_DIR)/%.png
 	@mkdir -p $(dir $@)
 	@echo "    [SPRITE] $@"
 	@$(N64_MKSPRITE) $(MKSPRITE_FLAGS) -o $(FILESYSTEM_DIR) "$<"
