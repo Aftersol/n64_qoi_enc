@@ -12,7 +12,9 @@ Small, QOI (Quite OK Image) encoder demo for Nintendo 64
 - B - save to raw
 - Z - save frame to RAM
 - DPad-Up - save to /dev/zero (null)
-- DPad-Left View last frame
+- DPad-Left - View last frame
+- DPad-Down - Hide Logo
+- Start - Hide Logo
 
 ## Requirements
 

@@ -5,7 +5,9 @@
 extern "C" {
 #endif
 
+/// @brief Version of the QOI encoder for N64
 #define QOI_ENC_VERSION "1.0.0"
+/// @brief Revision date of the QOI encoder for N64
 #define QOI_ENC_REVISION_DATE "(2026-04-15)"
 
 #if __cplusplus
