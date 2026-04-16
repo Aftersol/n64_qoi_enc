@@ -7,13 +7,13 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-linux:
+  build-linux-x86_64:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v5
 
-    - name: Build Linux
+    - name: Build Linux x86_64
       working-directory: tools
       run: make
 
@@ -21,23 +21,49 @@ jobs:
       uses: ./.github/actions/upload-artifact
       with:
         SOURCE_FILE: tools/qoi_enc
-        DEST_NAME: qoi_enc_linux
+        DEST_NAME: qoi_enc_linux-x86_64
 
-  build-macos-arm64:
-    runs-on: macos-latest
+  build-linux-arm64:
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v5
 
-    - name: Build MacOS ARM64
+    - name: Install Linux ARM64 cross-compiler
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-aarch64-linux-gnu
+
+    - name: Build Linux ARM64
       working-directory: tools
-      run: make
+      run: make CC=aarch64-linux-gnu-gcc
 
     - name: Upload
       uses: ./.github/actions/upload-artifact
       with:
         SOURCE_FILE: tools/qoi_enc
-        DEST_NAME: qoi_enc_macos_arm64
+        DEST_NAME: qoi_enc_linux-arm64
+
+  build-linux-arm32:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Install Linux ARM32 cross-compiler
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-arm-linux-gnueabihf
+
+    - name: Build Linux ARM32
+      working-directory: tools
+      run: make CC=arm-linux-gnueabihf-gcc
+
+    - name: Upload
+      uses: ./.github/actions/upload-artifact
+      with:
+        SOURCE_FILE: tools/qoi_enc
+        DEST_NAME: qoi_enc_linux-arm32
 
   build-macos-x86_64:
     runs-on: macos-latest
@@ -55,13 +81,29 @@ jobs:
         SOURCE_FILE: tools/qoi_enc
         DEST_NAME: qoi_enc_macos_x86_64
 
-  build-windows:
+  build-macos-arm64:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Build MacOS ARM64
+      working-directory: tools
+      run: make
+
+    - name: Upload
+      uses: ./.github/actions/upload-artifact
+      with:
+        SOURCE_FILE: tools/qoi_enc
+        DEST_NAME: qoi_enc_macos_arm64
+
+  build-windows-x86_64:
     runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v5
 
-    - name: Build Windows
+    - name: Build Windows x86_64
       working-directory: tools
       shell: bash
       run: make
@@ -70,7 +112,7 @@ jobs:
       uses: ./.github/actions/upload-artifact
       with:
         SOURCE_FILE: tools/qoi_enc.exe
-        DEST_NAME: qoi_enc_windows
+        DEST_NAME: qoi_enc_windows_x86_64
 
   build-windows-arm64:
     runs-on: ubuntu-latest
