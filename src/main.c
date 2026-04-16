@@ -33,8 +33,6 @@
 //#include <threads.h>
 
 #include <libdragon.h>
-#include "../libdragon/include/joypad.h"
-#include "../libdragon/include/joybus.h"
 
 #include "config.h"
 
