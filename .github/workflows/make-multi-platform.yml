@@ -17,6 +17,12 @@ jobs:
       working-directory: tools
       run: make
 
+    - name: Upload
+      uses: ./.github/actions/upload-artifact
+      with:
+        SOURCE_FILE: tools/qoi_enc
+        DEST_NAME: qoi_enc_linux
+
   build-macos:
     runs-on: macos-latest
 
@@ -26,6 +32,12 @@ jobs:
     - name: Build
       working-directory: tools
       run: make
+
+    - name: Upload
+      uses: ./.github/actions/upload-artifact
+      with:
+        SOURCE_FILE: tools/qoi_enc
+        DEST_NAME: qoi_enc_macos
 
   build-windows:
     runs-on: windows-latest
@@ -37,4 +49,10 @@ jobs:
       working-directory: tools
       shell: bash
       run: make
+
+    - name: Upload
+      uses: ./.github/actions/upload-artifact
+      with:
+        SOURCE_FILE: tools/qoi_enc.exe
+        DEST_NAME: qoi_enc_windows
         
