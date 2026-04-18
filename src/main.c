@@ -267,11 +267,12 @@ int main(void) {
 
     timer_init();
     joypad_init();
-    rdpq_init();
 
     dfs_init(DFS_DEFAULT_LOCATION);
 
     display_init(RESOLUTION_320x240, DEPTH_16_BPP, 2, GAMMA_NONE, FILTERS_RESAMPLE);
+
+    rdpq_init();
 
     font = rdpq_font_load_builtin(FONT_BUILTIN_DEBUG_MONO);
     rdpq_text_register_font(1, font);
