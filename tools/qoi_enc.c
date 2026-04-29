@@ -99,7 +99,8 @@ int main(int argc, char* argv[])
     /* File size of the raw file */
     size_t file_size;
 
-    uint8_t* file_buffer0, *file_buffer1;
+    uint8_t* file_buffer0 = NULL;
+    uint8_t* file_buffer1 = NULL;
 
     uint8_t header[16];
     
